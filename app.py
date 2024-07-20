@@ -5,10 +5,6 @@ import plotly.graph_objects as go
 import scipy.stats as stats
 import numpy as np
 
-# install plotly express 
-
-#!pip install plotly
-#!unzip all_data_neet_2024.zip
 # Load the data
 data1 = pd.read_csv('all_data_neet_2024_1.csv')
 data2 = pd.read_csv('all_data_neet_2024_2.csv')
@@ -27,9 +23,9 @@ filtered_data = data[(data['Marks'] >= cutoff_min) & (data['Marks'] <= cutoff_ma
 
 # Main Panel
 st.title("NEET 2024 Results Data Analysis")
-# add a subheader
-st.markdown("### Analysis of NEET 2024 Results Data some basic visualizations")
-## add a instruction
+# Add a subheader
+st.markdown("### Analysis of NEET 2024 Results Data with some basic visualizations")
+## Add instructions
 st.markdown("#### Instructions:")
 st.markdown("1. Use the sidebar to filter the data based on cutoff marks, state, and district.")
 st.markdown("2. The main panel will display the visualizations based on the selected filters.")
@@ -37,9 +33,9 @@ st.markdown("3. The data table will display the filtered data.")
 st.markdown("4. The number of students per center will be displayed in a table.")
 st.markdown("5. The normal distribution of marks for the top ten centers will be displayed.")
 
-st.markdown("**Data Source:** [NEET Website](https://neet.ntaonline.in/frontend/web/common-scorecard/index), Scraped and analysis by [@kushalkmrd](https://x.com/kushalkmrd)")
+st.markdown("**Data Source:** [NEET Website](https://neet.ntaonline.in/frontend/web/common-scorecard/index), Scraped and analyzed by [@kushalkmrd](https://x.com/kushalkmrd)")
 
-# Plot the number of Candidates per state for top centers
+# Plot the number of candidates per state for top centers
 state_counts = filtered_data['State'].value_counts().reset_index()
 state_counts.columns = ['State', 'count']
 fig_state = px.bar(state_counts, x='State', y='count', labels={'State': 'State', 'count': 'Number of Candidates'}, title='Top Centers per State', template='plotly_dark')
@@ -51,7 +47,7 @@ fig_state.add_annotation(
 )
 st.plotly_chart(fig_state, use_container_width=True)
 
-# Plot the number of Candidates per district for top centers
+# Plot the number of candidates per district for top centers
 district_counts = filtered_data['District'].value_counts().reset_index()
 district_counts.columns = ['District', 'count']
 fig_district = px.bar(district_counts, x='District', y='count', labels={'District': 'District', 'count': 'Number of Candidates'}, title='Top Centers per District', template='plotly_dark')
@@ -63,7 +59,7 @@ fig_district.add_annotation(
 )
 st.plotly_chart(fig_district, use_container_width=True)
 
-# Plot the number of Candidates per city for top centers
+# Plot the number of candidates per city for top centers
 city_counts = filtered_data['City'].value_counts().reset_index()
 city_counts.columns = ['City', 'count']
 fig_city = px.bar(city_counts, x='City', y='count', labels={'City': 'City', 'count': 'Number of Candidates'}, title='Top Centers per City', template='plotly_dark')
@@ -86,12 +82,10 @@ fig_marks.add_annotation(
 st.plotly_chart(fig_marks, use_container_width=True)
 
 # Data Table
-# add a title to the table
 st.markdown("### Full Data Table with the selected range for marks")
 st.dataframe(filtered_data)
 
-# Number of Candidates per center table
-# add a title to the table
+# Number of candidates per center table
 st.markdown("### Number of Students per Center in the selected range")
 center_counts = filtered_data['Center No'].value_counts().reset_index()
 center_counts.columns = ['Center No', 'Number of Students']
@@ -102,8 +96,6 @@ st.dataframe(center_counts)
 top_centers = center_counts.nlargest(10, 'Number of Students')
 
 fig = go.Figure()
-
-
 
 for center_no in top_centers['Center No']:
     center_data = filtered_data[filtered_data['Center No'] == center_no]['Marks']
@@ -116,6 +108,21 @@ fig.update_layout(title='Distribution of Marks for Top Ten Centers',
                   template='plotly_dark')
 
 st.plotly_chart(fig)
+
+# Summary table by state
+st.markdown("### Summary of Students with Marks Above Thresholds by State")
+thresholds = [700, 650, 600, 550, 500]
+summary_df = pd.DataFrame(columns=['State'] + [f'Sum of Above {thresh}' for thresh in thresholds])
+
+for state in filtered_data['State'].unique():
+    row = [state]
+    for thresh in thresholds:
+        count = filtered_data[(filtered_data['State'] == state) & (filtered_data['Marks'] > thresh)].shape[0]
+        row.append(count)
+    summary_df.loc[len(summary_df)] = row
+
+summary_df = summary_df.set_index('State')
+st.dataframe(summary_df)
 
 # Adding a watermark and disclaimer
 st.markdown("""
