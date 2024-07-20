@@ -104,17 +104,15 @@ top_centers = center_counts.nlargest(10, 'Number of Students')
 fig = go.Figure()
 
 
+
 for center_no in top_centers['Center No']:
     center_data = filtered_data[filtered_data['Center No'] == center_no]['Marks']
-    mean = center_data.mean()
-    std_dev = center_data.std()
-    x = np.linspace(mean - 3*std_dev, mean + 3*std_dev, 100)
-    y = stats.norm.pdf(x, mean, std_dev)
-    fig.add_trace(go.Scatter(x=x, y=y, mode='lines', name=f'Center No: {center_no}'))
+    fig.add_trace(go.Histogram(x=center_data, nbinsx=30, name=f'Center No: {center_no}', opacity=0.75))
 
-fig.update_layout(title='Normal Distribution of Marks for Top Ten Centers',
+fig.update_layout(title='Distribution of Marks for Top Ten Centers',
                   xaxis_title='Marks',
-                  yaxis_title='Density',
+                  yaxis_title='Frequency',
+                  barmode='overlay',
                   template='plotly_dark')
 
 st.plotly_chart(fig)
