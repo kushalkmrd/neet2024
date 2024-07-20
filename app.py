@@ -11,8 +11,11 @@ import plotly.express as px
 #!pip install plotly
 #!unzip all_data_neet_2024.zip
 # Load the data
-data = pd.read_csv('all_data_neet_2024.csv')
-
+data1 = pd.read_csv('all_data_neet_2024_1.csv')
+data2 = pd.read_csv('all_data_neet_2024_2.csv')
+data3 = pd.read_csv('all_data_neet_2024_3.csv')
+data4 = pd.read_csv('all_data_neet_2024_4.csv')
+data = pd.concat([data1, data2, data3, data4])
 
 # Sidebar for filters
 st.sidebar.title("Filters")
